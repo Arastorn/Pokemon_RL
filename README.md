@@ -11,19 +11,34 @@ pip3 install virtualenv
 pip3 install virtualenvwrapper
 ```
 
- - Add new variables to your path ( ./bashrc | ./zshrc)
+
+ - make sure your python version is 3.5.2 by running the command bellow
 
 ```
- vim ~/bashrc
+python3 -V
 ```
 
- - And add the following lines at the end:
- If you doesn't have the right python3 version just download it and set the VIRTUALENVWRAPPER_PYTHON path to it !
+
+If you doesn't have the right python3 version just download it and set the VIRTUALENVWRAPPER_PYTHON path to it !
+
+Download Python3.5.2 :
+
+```
+https://www.python.org/downloads/release/python-352/
+```
+
+- Add new variables to your path ( ./bashrc | ./zshrc)
+
+```
+vim ~/zshrc
+```
+
+- And add the following lines at the end:
 
 ```
 export WORKON_HOME=$HOME/Envs
 export PROJECT_HOME=$HOME/Devel
-export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3 //python3.5.2 path
 export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
 source ~/.local/bin/virtualenvwrapper.sh
 ```

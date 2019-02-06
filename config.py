@@ -1,4 +1,15 @@
 # config.py
 
-# Enable Flask's debugging features. Should be False in production
-DEBUG = True
+class BaseConfig(object):
+    DEBUG = False
+    TESTING = False
+
+
+class DevelopmentConfig(BaseConfig):
+    DEBUG = True
+    TESTING = True
+
+
+class TestingConfig(BaseConfig):
+    DEBUG = False
+    TESTING = True
