@@ -4,7 +4,6 @@ $( document ).ready(function() {
             'username': $("#username").val(),
             'password': $("#password").val(),
             'teamfile': $("#teamfile").val(),
-            'teamtext': $("#teamtext").val(),
             'browser': $("#browser").val(),
             'iterations': parseInt($("#iterations").val())
         }
@@ -14,4 +13,3 @@ $( document ).ready(function() {
         $.post("/api/play_game", data)
     });
 });
-
