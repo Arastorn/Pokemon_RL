@@ -1,4 +1,4 @@
-# app/views.py
+# app/routes.py
 
 from flask import Flask, jsonify, send_from_directory, render_template
 from webargs import fields
@@ -7,7 +7,8 @@ from threading import Thread, Timer
 from path import Path
 
 from app import app
-from app.main import fichier
+from app.src.fichier import fichier
+from app.src.showdownai.showdown import Showdown
 
 play_game_args = {
 'iterations': fields.Int( default=1),
@@ -17,6 +18,7 @@ play_game_args = {
 'challenge': fields.Str(default=None),
 'browser': fields.Str(default="chrome"),
 }
+
 
 @app.route('/')
 def index():
@@ -28,16 +30,17 @@ def index():
 @use_args(play_game_args)
 def play_game(args):
     team_text = (Path("teams") / args['teamfile']).text()
-    """showdown = Showdown(
+    showdown = Showdown(
     team_text,
-    PessimisticMinimaxAgent(2, self.pokedata),
     args['username'],
-    self.pokedata,
-    browser=args['browser'],
-    password=args['password'],
+    args['browser'],
+    args['password'],
     )
-    id = self.run_showdown(showdown, args)
-    response = {'id': id}"""
-    return jsonify(**args)
+    Thread(target=showdown.run, args=(args['iterations'],),
+            kwargs={
+                'challenge': args['challenge']
+            }).start()
+    response = {'id': id}
+    return jsonify(**response)
 
     #@app.route("/api/shodown/<int:id>", methods=['get'])
