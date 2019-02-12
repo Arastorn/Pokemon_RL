@@ -1,6 +1,5 @@
 import time
 import re
-import logging
 import random
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -10,10 +9,12 @@ from app.src.showdownai.exceptions import *
 
 
 class Selenium():
+
     BASE_URL="http://play.pokemonshowdown.com"
+
+
     def __init__(self, url=BASE_URL, timer_on=False, proxy=False, browser='chrome', lib_dir="app/lib/linux64/"):
         self.url = url
-        self.logger = logging.getLogger("showdown.browser")
         self.timer_on = timer_on
         self.browser = browser
         self.lib_dir = lib_dir
@@ -35,14 +36,11 @@ class Selenium():
                     chrome_options.add_argument('--proxy-server=%s' % PROXY)
                     self.driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=chrome_options)
 
-        self.state = None
-        self.poke_map = {
-            0:0,1:1,2:2,3:3,4:4,5:5
-        }
 
     def start_driver(self):
         print("Starting driver...")
         self.driver.get(self.url)
+
 
     def get_state(self):
         url = self.driver.current_url
@@ -51,10 +49,12 @@ class Selenium():
         else:
             return "lobby"
 
+
     def wait_home_page(self):
         print("Waiting for home page to load...")
         while self.driver.find_element_by_css_selector(".select.formatselect").get_attribute('value') != "gen7randombattle":
             time.sleep(1)
+
 
     def login(self, username, password):
         self.wait_home_page()
@@ -109,6 +109,7 @@ class Selenium():
         while url1 == self.driver.current_url:
             time.sleep(1.5)
 
+
     def start_challenge_battle(self, name, tier='gen7ou'):
         print("Starting challenge battle!")
 
@@ -150,21 +151,18 @@ class Selenium():
         id = url_list[-2:]
         return '-'.join(id)
 
+
     def make_team(self, team):
         print("Making team...")
         builder = self.driver.find_element_by_css_selector(".button[value='teambuilder']")
         builder.click()
-        #self.screenshot('log.png')
         new_team = self.driver.find_element_by_css_selector("[name='newTop']")
         new_team.click()
-        #self.screenshot('log.png')
         time.sleep(3)
         import_button = self.driver.find_element_by_css_selector(".button.big[name='import']")
         import_button.click()
-        #self.screenshot('log.png')
         textfield = self.driver.find_element_by_css_selector(".teamedit .textbox")
         textfield.send_keys(team)
-        #self.screenshot('log.png')
         save = self.driver.find_element_by_css_selector(".savebutton[name='saveImport']")
         save.click()
         # On click sur le format OU
@@ -190,8 +188,10 @@ class Selenium():
         #self.screenshot('log.png')
         time.sleep(2)
 
+
     def clear_cookies(self):
         self.driver.execute_script("localStorage.clear();")
+
 
     def turn_off_sound(self):
         print("Turning off sound...")
@@ -199,6 +199,7 @@ class Selenium():
         sound.click()
         mute = self.driver.find_element_by_css_selector("[name='muted']")
         mute.click()
+
 
     def get_my_primary(self):
         img = self.driver.find_elements_by_css_selector(".battle img")[6]
@@ -208,6 +209,7 @@ class Selenium():
         print("my primary : ", poke)
         return poke
 
+
     def get_opponent_primary(self):
         img = self.driver.find_elements_by_css_selector(".battle img")[5]
         text = img.get_attribute('src')
@@ -215,6 +217,7 @@ class Selenium():
         poke = poke[:-4]
         print("opponent primary : ", poke)
         return poke
+
 
     def random_Attack(self):
         print("Making a move...")
@@ -228,7 +231,7 @@ class Selenium():
                 self.attack_Information(attacks[randomAttack])
                 attacks[randomAttack].click()
         else:
-            self.switch_random()
+            self.switch_pokemon_random()
         self.wait_for_move()
 
 
@@ -241,17 +244,14 @@ class Selenium():
         print("pp left on the attack : ", pp)
 
 
-    def switch_initial(self, index):
-        #self.driver.save_screenshot('error.png')
-        print("Switching initial Pokemon...")
-        #if self.check_alive():
-        i = self.poke_map[index]
+    def choose_pokemon_at_game_start(self, index):
+        print("Choosing first Pokemon...")
         choose = self.driver.find_elements_by_name("chooseTeamPreview")[index]
         choose.click()
         self.wait_for_move()
 
 
-    def switch_random(self):
+    def switch_pokemon_random(self):
         print("Switching Pokemon Randomly...")
         switchMenu = self.driver.find_element_by_css_selector(".switchmenu")
         pokemonsAvailable = switchMenu.find_elements_by_css_selector("[name='chooseSwitch']")
@@ -261,60 +261,16 @@ class Selenium():
             randomPokemon = random.randint(1,len(pokemonsAvailable)-1)
             pokemonsAvailable[randomPokemon].click()
 
-    def switch(self, index, backup_switch, use_backup=True):
-        print("Switching Pokemon...")
-        if self.check_alive():
-            i = self.poke_map[index]
-            buttons = self.driver.find_elements_by_css_selector(".switchmenu button")
-            buttons[i].click()
-            old_primary = None
-            for k, v in self.poke_map.items():
-                if v == 0:
-                    old_primary = k
-
-            self.poke_map[index] = 0
-            self.poke_map[old_primary] = i
-
-        self.wait_for_move()
-        if use_backup:
-            self.backup_switch(backup_switch)
-
-    def backup_switch(self, index):
-        print("Backup switching Pokemon...")
-        #self.check_is_over()
-        if not self.check_alive():
-            i = self.poke_map[index]
-            buttons = self.driver.find_elements_by_css_selector(".switchmenu button")
-            buttons[i].click()
-            old_primary = None
-            for k, v in self.poke_map.items():
-                if v == 0:
-                    old_primary = k
-            self.poke_map[index] = 0
-            self.poke_map[old_primary] = i
-            self.wait_for_move()
-
-    def volt_turn(self, index):
-        print("Volt turning...")
-        if not self.check_exists_by_name("chooseMove"):
-            i = self.poke_map[index]
-            buttons = self.driver.find_elements_by_css_selector(".switchmenu button")
-            buttons[i].click()
-            old_primary = None
-            for k, v in self.poke_map.items():
-                if v == 0:
-                    old_primary = k
-            self.poke_map[index] = 0
-            self.poke_map[old_primary] = i
-        self.wait_for_move()
 
     def check_alive(self):
         return self.check_exists_by_css_selector(".rstatbar")
+
 
     def chat(self, message):
         chatbox = self.driver.find_elements_by_css_selector(".chatbox .textbox")[-1]
         chatbox.send_keys(message)
         chatbox.send_keys(Keys.RETURN)
+
 
     def check_exists_by_xpath(self, xpath):
         try:
@@ -323,12 +279,14 @@ class Selenium():
             return False
         return True
 
+
     def check_exists_by_id(self, id):
         try:
             self.driver.find_element_by_id(id)
         except NoSuchElementException:
             return False
         return True
+
 
     def check_exists_by_name(self, name):
         try:
@@ -337,12 +295,14 @@ class Selenium():
             return False
         return True
 
+
     def check_exists_by_class(self, cls):
         try:
             self.driver.find_elements_by_class_name(cls)
         except NoSuchElementException:
             return False
         return True
+
 
     def check_exists_by_css_selector(self, css, elem=None):
         try:
@@ -353,6 +313,7 @@ class Selenium():
             return len(result) > 0
         except NoSuchElementException:
             return False
+
 
     def start_timer(self):
         if self.check_exists_by_name("openTimer"):
@@ -365,16 +326,19 @@ class Selenium():
                     startTimerButton.click()
                     self.timer_on = True
 
+
     def get_log(self):
         log = self.driver.find_element_by_css_selector(".battle-log")
         return log.text.encode('utf-8')
+
 
     def wait_for_move(self):
         print("Waiting for move...")
         move_exists = self.check_exists_by_css_selector(".movemenu") or self.check_exists_by_css_selector(".switchmenu")
         while move_exists == False:
             try:
-                self.start_timer()
+                time.sleep(2)
+                #self.start_timer()
             except:
                 pass
             time.sleep(2)
@@ -391,14 +355,13 @@ class Selenium():
 
 
     def reset(self):
-        self.poke_map = {
-            0:0,1:1,2:2,3:3,4:4,5:5
-        }
         self.driver.get(self.url)
         time.sleep(2)
 
+
     def close(self):
         self.driver.close()
+
 
     def get_my_primary_health(self):
         if self.check_exists_by_css_selector(".rstatbar .hpbar .hptext"):

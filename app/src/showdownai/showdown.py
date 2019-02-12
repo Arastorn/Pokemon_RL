@@ -14,6 +14,8 @@ import traceback
 
 
 class Showdown():
+
+
     def __init__(self, team_text, username, password=None, proxy=False, browser='chrome'):
         self.username = username
         self.password = password
@@ -22,6 +24,7 @@ class Showdown():
         self.opp_team = None
         self.lib_dir = os.getcwd() + "/app/driver/"
         self.selenium = Selenium(proxy=proxy, browser=browser, lib_dir=self.lib_dir)
+
 
     def reset(self):
         print("Resetting...")
@@ -61,7 +64,7 @@ class Showdown():
             print("Found game: ", self.battle_url)
             self.selenium.wait_for_move()
             self.selenium.chat("gl hf!")
-            self.selenium.switch_initial(0)
+            self.selenium.choose_pokemon_at_game_start(0)
             over = False
             while not over:
                 print("==========================================================================================")
