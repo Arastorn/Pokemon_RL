@@ -1,6 +1,7 @@
 import time
 import re
 import random
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
@@ -42,20 +43,12 @@ class Selenium():
 
     def login(self, username, password):
         self.wait_home_page()
-        time.sleep(1)
         print("Logging in...")
-        elem = self.driver.find_element_by_name("login")
-        elem.click()
-        time.sleep(1)
-        user = self.driver.find_element_by_name("username")
-        user.send_keys(username)
-        user.send_keys(Keys.RETURN)
+        self.click_on_element_name("login")
+        self.write_in_element_name("username",username)
         while not self.check_exists_by_name("password"):
             time.sleep(1)
-        passwd = self.driver.find_element_by_name("password")
-        passwd.send_keys(password)
-        passwd.send_keys(Keys.RETURN)
-        time.sleep(1)
+        self.write_in_element_name("password",password)
 
 
     def choose_tier(self, tier='gen7ou'):
@@ -63,52 +56,38 @@ class Selenium():
             print("Selecting tier...")
             while not self.check_exists_by_css_selector(".select.formatselect"):
                 time.sleep(1)
-            form = self.driver.find_element_by_css_selector(".select.formatselect")
-            form.click()
-            time.sleep(2)
-            #self.driver.save_screenshot('ou.png')
-            tier = self.driver.find_element_by_css_selector("[name='selectFormat'][value='%s']" % tier)
-            tier.click()
+            self.click_on_element_css(".select.formatselect")
+            self.click_on_element_css("[name='selectFormat'][value='%s']" % tier)
         except:
             raise TierException()
 
 
     def start_ladder_battle(self):
         print("Starting ladder battle!")
-        url1 = self.driver.current_url
-        battle = self.driver.find_element_by_css_selector(".button.big")
-        battle.click()
+        url = self.driver.current_url
+        self.click_on_element_css(".button.big")
         battle_click = True
-        time.sleep(1)
-        if url1 == self.driver.current_url and self.check_exists_by_name("username"):
+        if url == self.driver.current_url and self.check_exists_by_name("username"):
             ps_overlay = self.driver.find_element_by_xpath("/html/body/div[4]")
             ps_overlay.click()
             battle_click = False
-        while url1 == self.driver.current_url and self.check_exists_by_name("login"):
+        while url == self.driver.current_url and self.check_exists_by_name("login"):
             time.sleep(1)
-        if url1 == self.driver.current_url and not battle_click:
-            battle = self.driver.find_element_by_css_selector(".button.big")
-            battle.click()
-            time.sleep(1)
-        while url1 == self.driver.current_url:
+        if url == self.driver.current_url and not battle_click:
+            self.click_on_element_css(".button.big")
+        while url == self.driver.current_url:
             time.sleep(1.5)
 
 
     def start_challenge_battle(self, name, tier='gen7ou'):
         print("Starting challenge battle!")
-
-        findUser = self.driver.find_element_by_css_selector(".button.mainmenu5.onlineonly")
-        findUser.click()
-        time.sleep(2)
+        self.click_on_element_css(".button.mainmenu5.onlineonly")
         if self.check_exists_by_css_selector(".textbox.autofocus"):
-            userBox = self.driver.find_element_by_css_selector(".textbox.autofocus")
-            userBox.send_keys(name)
-            userBox.send_keys(Keys.RETURN)
+            self.write_in_element_css(".textbox.autofocus",name)
         else:
            print("%s is not online...exiting now" % name)
            raise UserNotOnlineException()
         time.sleep(3)
-
         #ps_overlay = self.driver.find_element_by_xpath("/html/body/div[4]")
         #challenge = ps_overlay.find_element_by_css_selector("[name='pm']")
         #challenge.click()
@@ -120,10 +99,7 @@ class Selenium():
         formatCombat = challengeWindow.find_element_by_css_selector(".select.formatselect")
         formatCombat.click()
         time.sleep(2)
-        tier = self.driver.find_element_by_css_selector("[name='selectFormat'][value='gen7ou']")
-        tier.click()
-        time.sleep(2)
-
+        self.click_on_element_css("[name='selectFormat'][value='gen7ou']")
         make_challenge = challengeWindow.find_element_by_css_selector("[name='makeChallenge']")
         make_challenge.click()
         print("Sent a challenge!")
@@ -138,39 +114,22 @@ class Selenium():
 
     def make_team(self, team):
         print("Making team...")
-        builder = self.driver.find_element_by_css_selector(".button[value='teambuilder']")
-        builder.click()
-        new_team = self.driver.find_element_by_css_selector("[name='newTop']")
-        new_team.click()
-        time.sleep(3)
-        import_button = self.driver.find_element_by_css_selector(".button.big[name='import']")
-        import_button.click()
+        self.click_on_element_css(".button[value='teambuilder']")
+        self.click_on_element_css("[name='newTop']")
+        self.click_on_element_css(".button.big[name='import']")
         textfield = self.driver.find_element_by_css_selector(".teamedit .textbox")
         textfield.send_keys(team)
-        save = self.driver.find_element_by_css_selector(".savebutton[name='saveImport']")
-        save.click()
+        self.click_on_element_css(".savebutton[name='saveImport']")
         # On click sur le format OU
         while not self.check_exists_by_css_selector(".teambuilderformatselect"):
             time.sleep(1)
-        formatSelect = self.driver.find_element_by_css_selector(".teambuilderformatselect")
-        formatSelect.click()
-        time.sleep(2)
-        format = self.driver.find_element_by_css_selector("[name='selectFormat'][value='gen7ou']")
-        format.click()
-
-        validate = self.driver.find_element_by_css_selector(".button[name='validate']")
-        validate.click()
-
+        self.click_on_element_css(".teambuilderformatselect")
+        self.click_on_element_css("[name='selectFormat'][value='gen7ou']")
+        self.click_on_element_css(".button[name='validate']")
         while not self.check_exists_by_css_selector(".autofocus"):
             time.sleep(1)
-        buttonOk = self.driver.find_element_by_css_selector(".autofocus")
-        buttonOk.click()
-        time.sleep(2)
-        #self.screenshot('log.png')
-        close_button = self.driver.find_element_by_css_selector(".closebutton[name='closeRoom']")
-        close_button.click()
-        #self.screenshot('log.png')
-        time.sleep(2)
+        self.click_on_element_css(".autofocus")
+        self.click_on_element_css(".closebutton[name='closeRoom']")
 
 
     def waiting_opponent_action(self):
@@ -186,12 +145,10 @@ class Selenium():
             move_exists = self.check_exists_by_css_selector(".movemenu") or self.check_exists_by_css_selector(".switchmenu")
             if self.check_exists_by_css_selector("[name='saveReplay']"):
                 self.chat("gg")
-                save_replay = self.driver.find_element_by_css_selector("[name='saveReplay']")
-                save_replay.click()
+                self.click_on_element_css("[name='saveReplay']")
                 while not self.check_exists_by_id(self.get_battle_id()):
                     time.sleep(1)
-                ps_overlay = self.driver.find_element_by_css_selector(".ps-overlay")
-                ps_overlay.click()
+                self.click_on_element_css(".ps-overlay")
                 raise GameOverException()
 
 
@@ -201,9 +158,8 @@ class Selenium():
             if timer.text == "Timer":
                 timer.click()
                 if self.check_exists_by_name("timerOn"):
-                    startTimerButton = self.driver.find_element_by_name("timerOn")
                     print("Starting timer...")
-                    startTimerButton.click()
+                    self.click_on_element_name("timerOn")
                     self.timer_on = True
 
 
@@ -211,8 +167,7 @@ class Selenium():
         print("Making a move...")
         if (self.check_alive()) and (self.check_exists_by_css_selector(".movemenu")):
             if self.check_exists_by_name('megaevo'):
-                mega_button = self.driver.find_element_by_name('megaevo')
-                mega_button.click()
+                self.click_on_element_name("megaevo")
             attacks = self.driver.find_elements_by_css_selector(".movemenu button")
             if(len(attacks)>0):
                 randomAttack = random.randint(1,len(attacks)-1)
@@ -297,6 +252,39 @@ class Selenium():
         chatbox.send_keys(Keys.RETURN)
 
 
+    def click_on_element_name(self,element):
+        try:
+            self.driver.find_element_by_name(element).click()
+            time.sleep(1)
+        except NoSuchElementException:
+            print("Element : " + element + " Not Found")
+
+
+    def click_on_element_css(self,element):
+        try:
+            self.driver.find_element_by_css_selector(element).click()
+            time.sleep(1)
+        except NoSuchElementException:
+            print("Element : " + element + " Not Found")
+
+    def write_in_element_name(self,element,stringToWrite):
+        try:
+            elem = self.driver.find_element_by_name(element)
+            elem.send_keys(stringToWrite)
+            elem.send_keys(Keys.RETURN)
+            time.sleep(1)
+        except NoSuchElementException:
+            print("Element : " + element + " Not Found")
+
+    def write_in_element_css(self,element,stringToWrite):
+        try:
+            elem = self.driver.find_element_by_css_selector(element)
+            elem.send_keys(stringToWrite)
+            elem.send_keys(Keys.RETURN)
+            time.sleep(1)
+        except NoSuchElementException:
+            print("Element : " + element + " Not Found")
+
     def check_exists_by_xpath(self, xpath):
         try:
             self.driver.find_element_by_xpath(xpath)
@@ -360,7 +348,5 @@ class Selenium():
 
     def turn_off_sound(self):
         print("Turning off sound...")
-        sound = self.driver.find_element_by_css_selector(".icon[name='openSounds']")
-        sound.click()
-        mute = self.driver.find_element_by_css_selector("[name='muted']")
-        mute.click()
+        self.click_on_element_css(".icon[name='openSounds']")
+        self.click_on_element_css("[name='muted']")

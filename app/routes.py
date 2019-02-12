@@ -45,5 +45,3 @@ def play_game(args):
                 'challenge': challenge
             }).start()
     return jsonify(**args)
-
-    #@app.route("/api/shodown/<int:id>", methods=['get'])

@@ -70,15 +70,23 @@ class Showdown():
                 self.selenium.random_Attack()
 
 
+    def print_game_log(self):
+        chat_log = self.selenium.get_log()
+        print("=============================================")
+        print("Game log : ")
+        print(chat_log)
+        id = self.selenium.get_battle_id()
+        battle_url = "http://replay.pokemonshowdown.com/battle-%s" % id
+        print("=============================================")
+        print("Finished game! Replay can be found at: ", battle_url)
+
+
     def run(self, num_games=1, challenge=None):
         if challenge:
             print("Set to challenge: %s", challenge)
         else:
             print("Set to play %u games", num_games)
         self.init()
-        def signal_handler(signal, frame):
-            sys.exit(0)
-        #signal.signal(signal.SIGINT, signal_handler)
         for i in range(num_games):
             result, error = None, None
             try:
@@ -92,14 +100,7 @@ class Showdown():
             except:
                 error = traceback.format_exc()
                 print("Error", error)
-            chat_log = self.selenium.get_log()
-            print("=============================================")
-            print("Game log : ")
-            print(chat_log)
-            id = self.selenium.get_battle_id()
-            battle_url = "http://replay.pokemonshowdown.com/battle-%s" % id
-            print("=============================================")
-            print("Finished game! Replay can be found at: ", battle_url)
+            self.print_game_log()
             self.reset()
         self.selenium.close()
         print("Done!")
