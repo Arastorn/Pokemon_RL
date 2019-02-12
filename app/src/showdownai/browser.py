@@ -12,29 +12,13 @@ class Selenium():
 
     BASE_URL="http://play.pokemonshowdown.com"
 
-
     def __init__(self, url=BASE_URL, timer_on=False, proxy=False, browser='chrome', lib_dir="app/lib/linux64/"):
         self.url = url
         self.timer_on = timer_on
         self.browser = browser
         self.lib_dir = lib_dir
-        print("Browser: %s" % browser)
-        if browser == "firefox":
-            print("Selecting Firefox to use as browser...")
-            self.driver = webdriver.Firefox()
-        elif browser == "chrome":
-            print("Selecting Chrome to use as browser...")
-            chrome_path = self.lib_dir + "chromedriver"
-            print(chrome_path)
-            self.driver = webdriver.Chrome(executable_path=chrome_path)
-        else:
-            if proxy:
-                PROXY = "127.0.0.1:9666"
-                if browser == "chrome":
-                    chrome_path = "%s\chromedriver.exe" % self.lib_dir
-                    chrome_options = webdriver.ChromeOptions()
-                    chrome_options.add_argument('--proxy-server=%s' % PROXY)
-                    self.driver = webdriver.Chrome(executable_path=chrome_path, chrome_options=chrome_options)
+        chrome_path = self.lib_dir + "chromedriver"
+        self.driver = webdriver.Chrome(executable_path=chrome_path)
 
 
     def start_driver(self):

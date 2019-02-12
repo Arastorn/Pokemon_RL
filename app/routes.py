@@ -16,7 +16,6 @@ play_game_args = {
 'password': fields.Str(required=True),
 'teamfile':fields.Str(required=True),
 'challenge': fields.Str(default=None),
-'browser': fields.Str(default="chrome"),
 }
 
 
@@ -39,7 +38,6 @@ def play_game(args):
     showdown = Showdown(
     team_text,
     args['username'],
-    browser=args['browser'],
     password=args['password'],
     )
     Thread(target=showdown.run, args=(args['iterations'],),

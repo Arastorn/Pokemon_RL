@@ -15,21 +15,18 @@ import traceback
 
 class Showdown():
 
-
-    def __init__(self, team_text, username, password=None, proxy=False, browser='chrome'):
+    def __init__(self, team_text, username, password=None, proxy=False):
         self.username = username
         self.password = password
         self.team_text = team_text
         self.battle_url = None
-        self.opp_team = None
         self.lib_dir = os.getcwd() + "/app/driver/"
-        self.selenium = Selenium(proxy=proxy, browser=browser, lib_dir=self.lib_dir)
+        self.selenium = Selenium(proxy=proxy, browser='chrome', lib_dir=self.lib_dir)
 
 
     def reset(self):
         print("Resetting...")
         self.selenium.reset()
-        self.opp_team = None
 
 
     def init(self):
