@@ -30,17 +30,22 @@ def index():
 @use_args(play_game_args)
 def play_game(args):
     team_text = (Path("teams") / args['teamfile']).text()
+    if "challenge" in args:
+        print(args['challenge'])
+        challenge = args['challenge']
+    else:
+        print("no challenge ")
+        challenge = None
     showdown = Showdown(
     team_text,
     args['username'],
-    args['browser'],
-    args['password'],
+    browser=args['browser'],
+    password=args['password'],
     )
     Thread(target=showdown.run, args=(args['iterations'],),
             kwargs={
-                'challenge': args['challenge']
+                'challenge': challenge
             }).start()
-    response = {'id': id}
-    return jsonify(**response)
+    return jsonify(**args)
 
     #@app.route("/api/shodown/<int:id>", methods=['get'])

@@ -17,7 +17,7 @@ class RouteTest(unittest.TestCase):
             username='Arastorn',
             password='testBot',
             teamfile="overpowered.txt",
-            challenge="",
+            challenge="ArastornChal",
             browser="chrome"
         ), follow_redirects=True)
         self.assertEqual(response.status_code,200)

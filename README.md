@@ -90,6 +90,18 @@ export FLASK_APP=run.py
 
 ## Usefull commands
 
+Test account on challenge mode :
+```
+pseudo : ArastornChal
+password : testBot
+```
+
+Launch test :
+
+```
+nosetest
+```
+
 To remove a virtualenv :
 
 ```
