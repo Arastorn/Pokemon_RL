@@ -189,16 +189,81 @@ class Selenium():
         time.sleep(2)
 
 
-    def clear_cookies(self):
-        self.driver.execute_script("localStorage.clear();")
+    def waiting_opponent_action(self):
+        print("Waiting opponent action...")
+        move_exists = self.check_exists_by_css_selector(".movemenu") or self.check_exists_by_css_selector(".switchmenu")
+        while move_exists == False:
+            try:
+                time.sleep(2)
+                #self.start_timer()
+            except:
+                pass
+            time.sleep(2)
+            move_exists = self.check_exists_by_css_selector(".movemenu") or self.check_exists_by_css_selector(".switchmenu")
+            if self.check_exists_by_css_selector("[name='saveReplay']"):
+                self.chat("gg")
+                save_replay = self.driver.find_element_by_css_selector("[name='saveReplay']")
+                save_replay.click()
+                while not self.check_exists_by_id(self.get_battle_id()):
+                    time.sleep(1)
+                ps_overlay = self.driver.find_element_by_css_selector(".ps-overlay")
+                ps_overlay.click()
+                raise GameOverException()
 
 
-    def turn_off_sound(self):
-        print("Turning off sound...")
-        sound = self.driver.find_element_by_css_selector(".icon[name='openSounds']")
-        sound.click()
-        mute = self.driver.find_element_by_css_selector("[name='muted']")
-        mute.click()
+    def start_timer(self):
+        if self.check_exists_by_name("openTimer"):
+            timer = self.driver.find_element_by_name("openTimer")
+            if timer.text == "Timer":
+                timer.click()
+                if self.check_exists_by_name("timerOn"):
+                    startTimerButton = self.driver.find_element_by_name("timerOn")
+                    print("Starting timer...")
+                    startTimerButton.click()
+                    self.timer_on = True
+
+
+    def random_Attack(self):
+        print("Making a move...")
+        if (self.check_alive()) and (self.check_exists_by_css_selector(".movemenu")):
+            if self.check_exists_by_name('megaevo'):
+                mega_button = self.driver.find_element_by_name('megaevo')
+                mega_button.click()
+            attacks = self.driver.find_elements_by_css_selector(".movemenu button")
+            if(len(attacks)>0):
+                randomAttack = random.randint(1,len(attacks)-1)
+                self.attack_Information(attacks[randomAttack])
+                attacks[randomAttack].click()
+        else:
+            self.switch_pokemon_random()
+        self.waiting_opponent_action()
+
+
+    def attack_Information(self, attack):
+        attack_name = attack.get_attribute("data-move")
+        type = attack.find_element_by_css_selector(".type").text
+        pp = attack.find_element_by_css_selector(".pp").text
+        print("Attack used : ", attack_name)
+        print("Type of the attack : ", type)
+        print("pp left on the attack : ", pp)
+
+
+    def choose_pokemon_at_game_start(self, index):
+        print("Choosing first Pokemon...")
+        choose = self.driver.find_elements_by_name("chooseTeamPreview")[index]
+        choose.click()
+        self.waiting_opponent_action()
+
+
+    def switch_pokemon_random(self):
+        print("Switching Pokemon Randomly...")
+        switchMenu = self.driver.find_element_by_css_selector(".switchmenu")
+        pokemonsAvailable = switchMenu.find_elements_by_css_selector("[name='chooseSwitch']")
+        # Take a random number of PokemonsAvailable
+        print(len(pokemonsAvailable))
+        if(len(pokemonsAvailable) > 0 ):
+            randomPokemon = random.randint(1,len(pokemonsAvailable)-1)
+            pokemonsAvailable[randomPokemon].click()
 
 
     def get_my_primary(self):
@@ -219,48 +284,24 @@ class Selenium():
         return poke
 
 
-    def random_Attack(self):
-        print("Making a move...")
-        if (self.check_alive()) and (self.check_exists_by_css_selector(".movemenu")):
-            if self.check_exists_by_name('megaevo'):
-                mega_button = self.driver.find_element_by_name('megaevo')
-                mega_button.click()
-            attacks = self.driver.find_elements_by_css_selector(".movemenu button")
-            if(len(attacks)>0):
-                randomAttack = random.randint(1,len(attacks)-1)
-                self.attack_Information(attacks[randomAttack])
-                attacks[randomAttack].click()
+    def get_my_primary_health(self):
+        if self.check_exists_by_css_selector(".rstatbar .hpbar .hptext"):
+            hp_text = self.driver.find_element_by_css_selector(".rstatbar .hpbar .hptext")
+            hp = hp_text.text.strip("%")
+            hp = int(hp)
         else:
-            self.switch_pokemon_random()
-        self.wait_for_move()
+            hp = 0
+        return hp
 
 
-    def attack_Information(self, attack):
-        attack_name = attack.get_attribute("data-move")
-        type = attack.find_element_by_css_selector(".type").text
-        pp = attack.find_element_by_css_selector(".pp").text
-        print("Attack used : ", attack_name)
-        print("Type of the attack : ", type)
-        print("pp left on the attack : ", pp)
-
-
-    def choose_pokemon_at_game_start(self, index):
-        print("Choosing first Pokemon...")
-        choose = self.driver.find_elements_by_name("chooseTeamPreview")[index]
-        choose.click()
-        self.wait_for_move()
-
-
-    def switch_pokemon_random(self):
-        print("Switching Pokemon Randomly...")
-        switchMenu = self.driver.find_element_by_css_selector(".switchmenu")
-        pokemonsAvailable = switchMenu.find_elements_by_css_selector("[name='chooseSwitch']")
-        # Take a random number of PokemonsAvailable
-        print(len(pokemonsAvailable))
-        if(len(pokemonsAvailable) > 0 ):
-            randomPokemon = random.randint(1,len(pokemonsAvailable)-1)
-            pokemonsAvailable[randomPokemon].click()
-
+    def get_opponent_primary_health(self):
+        if self.check_exists_by_css_selector(".lstatbar .hpbar .hptext"):
+            hp_text = self.driver.find_element_by_css_selector(".lstatbar .hpbar .hptext")
+            hp = hp_text.text.strip("%")
+            hp = int(hp)
+        else:
+            hp = 0
+        return hp
 
     def check_alive(self):
         return self.check_exists_by_css_selector(".rstatbar")
@@ -315,43 +356,9 @@ class Selenium():
             return False
 
 
-    def start_timer(self):
-        if self.check_exists_by_name("openTimer"):
-            timer = self.driver.find_element_by_name("openTimer")
-            if timer.text == "Timer":
-                timer.click()
-                if self.check_exists_by_name("timerOn"):
-                    startTimerButton = self.driver.find_element_by_name("timerOn")
-                    print("Starting timer...")
-                    startTimerButton.click()
-                    self.timer_on = True
-
-
     def get_log(self):
         log = self.driver.find_element_by_css_selector(".battle-log")
         return log.text.encode('utf-8')
-
-
-    def wait_for_move(self):
-        print("Waiting for move...")
-        move_exists = self.check_exists_by_css_selector(".movemenu") or self.check_exists_by_css_selector(".switchmenu")
-        while move_exists == False:
-            try:
-                time.sleep(2)
-                #self.start_timer()
-            except:
-                pass
-            time.sleep(2)
-            move_exists = self.check_exists_by_css_selector(".movemenu") or self.check_exists_by_css_selector(".switchmenu")
-            if self.check_exists_by_css_selector("[name='saveReplay']"):
-                self.chat("gg")
-                save_replay = self.driver.find_element_by_css_selector("[name='saveReplay']")
-                save_replay.click()
-                while not self.check_exists_by_id(self.get_battle_id()):
-                    time.sleep(1)
-                ps_overlay = self.driver.find_element_by_css_selector(".ps-overlay")
-                ps_overlay.click()
-                raise GameOverException()
 
 
     def reset(self):
@@ -363,21 +370,13 @@ class Selenium():
         self.driver.close()
 
 
-    def get_my_primary_health(self):
-        if self.check_exists_by_css_selector(".rstatbar .hpbar .hptext"):
-            hp_text = self.driver.find_element_by_css_selector(".rstatbar .hpbar .hptext")
-            hp = hp_text.text.strip("%")
-            hp = int(hp)
-        else:
-            hp = 0
-        return hp
+    def clear_cookies(self):
+        self.driver.execute_script("localStorage.clear();")
 
 
-    def get_opponent_primary_health(self):
-        if self.check_exists_by_css_selector(".lstatbar .hpbar .hptext"):
-            hp_text = self.driver.find_element_by_css_selector(".lstatbar .hpbar .hptext")
-            hp = hp_text.text.strip("%")
-            hp = int(hp)
-        else:
-            hp = 0
-        return hp
+    def turn_off_sound(self):
+        print("Turning off sound...")
+        sound = self.driver.find_element_by_css_selector(".icon[name='openSounds']")
+        sound.click()
+        mute = self.driver.find_element_by_css_selector("[name='muted']")
+        mute.click()

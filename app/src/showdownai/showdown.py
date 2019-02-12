@@ -62,7 +62,7 @@ class Showdown():
                 print("Unable to click tier. Trying again...")
             self.battle_url = self.selenium.driver.current_url
             print("Found game: ", self.battle_url)
-            self.selenium.wait_for_move()
+            self.selenium.waiting_opponent_action()
             self.selenium.chat("gl hf!")
             self.selenium.choose_pokemon_at_game_start(0)
             over = False
