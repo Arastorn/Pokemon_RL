@@ -1,8 +1,8 @@
 from app.src.showdownai.browser import Selenium
 from app.src.showdownai.exceptions import *
 from path import Path
-import time
 
+import time
 import sys
 import os
 import platform
@@ -43,6 +43,7 @@ class Showdown():
         print("My pokemon : " + self.selenium.get_my_primary() + " health : " +  self.selenium.get_my_primary_health())
         print("Opponent pokemon : " + self.selenium.get_opponent_primary() + " health : " + self.selenium.get_opponent_primary_health())
 
+
     def play_game(self, challenge=None):
         print("Finding a game...")
         tier_click = False
@@ -68,6 +69,7 @@ class Showdown():
                 print ("My move:")
                 self.selenium.random_Attack()
 
+
     def run(self, num_games=1, challenge=None):
         if challenge:
             print("Set to challenge: %s", challenge)
@@ -90,10 +92,10 @@ class Showdown():
             except:
                 error = traceback.format_exc()
                 print("Error", error)
-            log = self.selenium.get_log()
+            chat_log = self.selenium.get_log()
             print("=============================================")
             print("Game log : ")
-            print(log)
+            print(chat_log)
             id = self.selenium.get_battle_id()
             battle_url = "http://replay.pokemonshowdown.com/battle-%s" % id
             print("=============================================")
