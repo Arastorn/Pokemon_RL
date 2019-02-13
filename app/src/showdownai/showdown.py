@@ -79,10 +79,12 @@ class Showdown():
     def change_current_gamestate(self):
         my_team_string = self.selenium.get_my_team()
         self.gamestate.set_my_primary(my_team_string)
-        print(self.gamestate.get_my_primary())
         opponent_team_string = self.selenium.get_opponent_team()
         self.gamestate.set_opponent_primary(opponent_team_string)
-        print(self.gamestate.get_opponent_primary())
+        my_primary_pokemon = self.gamestate.get_my_primary()
+        opponent_primary_pokemon = self.gamestate.get_opponent_primary()
+        my_primary_pokemon.hp = self.selenium.get_my_primary_health()
+        opponent_primary_pokemon.hp = self.selenium.get_opponent_primary_health()
         #print("health : " + str(self.selenium.get_my_primary_health()))
         #self.selenium.get_opponent_primary()
         #print("health : " + str(self.selenium.get_opponent_primary_health()))
@@ -111,10 +113,11 @@ class Showdown():
             over = False
             while not over:
                 print("==========================================================================================")
-                self.change_current_gamestate()
-                self.gamestate.print_game_state()
                 print ("My move:")
                 self.selenium.random_Attack()
+                self.change_current_gamestate()
+                self.gamestate.print_game_state()
+
 
 
     def print_game_log(self):

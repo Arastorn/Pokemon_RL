@@ -199,7 +199,6 @@ class Selenium():
         switchMenu = self.driver.find_element_by_css_selector(".switchmenu")
         pokemonsAvailable = switchMenu.find_elements_by_css_selector("[name='chooseSwitch']")
         # Take a random number of PokemonsAvailable
-        print(len(pokemonsAvailable))
         if(len(pokemonsAvailable) > 0 ):
             randomPokemon = random.randint(1,len(pokemonsAvailable)-1)
             pokemonsAvailable[randomPokemon].click()

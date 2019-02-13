@@ -26,11 +26,7 @@ class GameState():
 
     def print_game_state(self):
         print("GameState : ")
-        print("My team : ")
-        self.my_team.team_state()
-        print("Opponent team : ")
-        self.opponent_team.team_state()
-        print("My primary : ")
-        self.my_team.get_primary_pokemon()
-        print("Opponent primary : ")
-        self.opponent_team.get_primary_pokemon()
+        my_primary = self.my_team.get_primary_pokemon()
+        print("My primary : " + my_primary.name + " health : " + str(my_primary.hp))
+        opponent_primary = self.opponent_team.get_primary_pokemon()
+        print("Opponent primary : " + opponent_primary.name + " health : " + str(opponent_primary.hp))
