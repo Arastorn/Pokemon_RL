@@ -209,7 +209,6 @@ class Selenium():
         if self.check_exists_by_css_selector(".rstatbar strong"):
             text = self.driver.find_element_by_css_selector(".rstatbar strong").text
             poke = text
-            print("my primary : ", poke)
             return poke
 
 
@@ -217,7 +216,6 @@ class Selenium():
         if self.check_exists_by_css_selector(".lstatbar strong"):
             text = self.driver.find_element_by_css_selector(".lstatbar strong").text
             poke = text
-            print("opponent primary : ", poke)
             return poke
 
 
@@ -247,7 +245,6 @@ class Selenium():
             my_team = []
             for element in my_team_element:
                 pokemon_name = element.get_attribute("title")
-                print(pokemon_name)
                 my_team.append(pokemon_name)
             return my_team
 
@@ -258,7 +255,6 @@ class Selenium():
             my_team = []
             for element in my_team_element:
                 pokemon_name = element.get_attribute("title")
-                print(pokemon_name)
                 my_team.append(pokemon_name)
             return my_team
 

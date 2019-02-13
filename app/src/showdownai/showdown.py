@@ -60,23 +60,32 @@ class Showdown():
         return team
 
 
+    def string_list_to_team(self,string_list):
+        team = []
+        for string in string_list:
+            team.append(Pokemon(string))
+        team_of_pokemon = Team(team)
+        return team_of_pokemon
+
+
     def set_initial_gamestate(self):
-        #TODO
-        my_team =  None
-        opponent_team = None
+        my_team_string = self.selenium.get_my_team()
+        my_team = self.string_list_to_team(my_team_string)
+        opponent_team_string = self.selenium.get_opponent_team()
+        opponent_team = self.string_list_to_team(opponent_team_string)
         self.gamestate = GameState(my_team,opponent_team)
 
 
-    def current_state(self):
-        print("State of the game :")
-        self.selenium.get_my_primary()
-        print("health : " + str(self.selenium.get_my_primary_health()))
-        self.selenium.get_opponent_primary()
-        print("health : " + str(self.selenium.get_opponent_primary_health()))
-        print("My team : ")
-        my_team = self.selenium.get_my_team()
-        print("Opponent team : ")
-        opponent_team = self.selenium.get_opponent_team()
+    def change_current_gamestate(self):
+        my_team_string = self.selenium.get_my_team()
+        self.gamestate.set_my_primary(my_team_string)
+        print(self.gamestate.get_my_primary())
+        opponent_team_string = self.selenium.get_opponent_team()
+        self.gamestate.set_opponent_primary(opponent_team_string)
+        print(self.gamestate.get_opponent_primary())
+        #print("health : " + str(self.selenium.get_my_primary_health()))
+        #self.selenium.get_opponent_primary()
+        #print("health : " + str(self.selenium.get_opponent_primary_health()))
 
 
     def play_game(self, challenge=None):
@@ -96,11 +105,14 @@ class Showdown():
             print("Found game: ", self.battle_url)
             self.selenium.waiting_opponent_action()
             self.selenium.chat("gl hf!")
+            self.set_initial_gamestate()
+            self.gamestate.print_game_state()
             self.selenium.choose_pokemon_at_game_start(0)
             over = False
             while not over:
                 print("==========================================================================================")
-                self.current_state()
+                self.change_current_gamestate()
+                self.gamestate.print_game_state()
                 print ("My move:")
                 self.selenium.random_Attack()
 
