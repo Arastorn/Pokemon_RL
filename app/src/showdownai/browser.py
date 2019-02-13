@@ -240,6 +240,28 @@ class Selenium():
             hp = 0
         return hp
 
+
+    def get_my_team(self):
+        if self.check_exists_by_css_selector(".leftbar .trainer .teamicons"):
+            my_team_element = self.driver.find_elements_by_css_selector(".leftbar .trainer .teamicons span")
+            my_team = []
+            for element in my_team_element:
+                pokemon_name = element.get_attribute("title")
+                print(pokemon_name)
+                my_team.append(pokemon_name)
+            return my_team
+
+
+    def get_opponent_team(self):
+        if self.check_exists_by_css_selector(".rightbar .trainer .teamicons"):
+            my_team_element = self.driver.find_elements_by_css_selector(".rightbar .trainer .teamicons span")
+            my_team = []
+            for element in my_team_element:
+                pokemon_name = element.get_attribute("title")
+                print(pokemon_name)
+                my_team.append(pokemon_name)
+            return my_team
+
     def check_alive(self):
         return self.check_exists_by_css_selector(".rstatbar")
 

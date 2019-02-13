@@ -2,7 +2,5 @@
 
 class Pokemon():
 
-    def __init__(self, name, type, health):
+    def __init__(self, name):
         self.name = name
-        self.type = type
-        self.health = health

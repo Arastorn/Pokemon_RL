@@ -73,6 +73,10 @@ class Showdown():
         print("health : " + str(self.selenium.get_my_primary_health()))
         self.selenium.get_opponent_primary()
         print("health : " + str(self.selenium.get_opponent_primary_health()))
+        print("My team : ")
+        my_team = self.selenium.get_my_team()
+        print("Opponent team : ")
+        opponent_team = self.selenium.get_opponent_team()
 
 
     def play_game(self, challenge=None):
