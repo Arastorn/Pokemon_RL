@@ -206,21 +206,19 @@ class Selenium():
 
 
     def get_my_primary(self):
-        img = self.driver.find_elements_by_css_selector(".battle img")[6]
-        text = img.get_attribute('src')
-        poke = text.split("/")[-1]
-        poke = poke[:-4]
-        print("my primary : ", poke)
-        return poke
+        if self.check_exists_by_css_selector(".rstatbar strong"):
+            text = self.driver.find_element_by_css_selector(".rstatbar strong").text
+            poke = text
+            print("my primary : ", poke)
+            return poke
 
 
     def get_opponent_primary(self):
-        img = self.driver.find_elements_by_css_selector(".battle img")[5]
-        text = img.get_attribute('src')
-        poke = text.split("/")[-1]
-        poke = poke[:-4]
-        print("opponent primary : ", poke)
-        return poke
+        if self.check_exists_by_css_selector(".lstatbar strong"):
+            text = self.driver.find_element_by_css_selector(".lstatbar strong").text
+            poke = text
+            print("opponent primary : ", poke)
+            return poke
 
 
     def get_my_primary_health(self):

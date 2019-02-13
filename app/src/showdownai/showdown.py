@@ -1,4 +1,7 @@
 from app.src.showdownai.browser import Selenium
+from app.src.showdownai.gamestate import GameState
+from app.src.showdownai.pokemon import Pokemon
+from app.src.showdownai.team import Team
 from app.src.showdownai.exceptions import *
 from path import Path
 
@@ -22,6 +25,7 @@ class Showdown():
         self.battle_url = None
         self.lib_dir = os.getcwd() + "/app/driver/"
         self.selenium = Selenium(proxy=proxy, browser='chrome', lib_dir=self.lib_dir)
+        self.gamestate = None
 
 
     def reset(self):
@@ -38,10 +42,37 @@ class Showdown():
         self.selenium.make_team(self.team_text)
 
 
+    def parse_text_to_pokemon(self):
+        #TODO
+        pokemon = None
+        return pokemon
+
+
+    def parse_web_to_pokemon(self):
+        #TODO
+        pokemon = None
+        return pokemon
+
+
+    def create_team(self):
+        #TODO
+        team = None
+        return team
+
+
+    def set_initial_gamestate(self):
+        #TODO
+        my_team =  None
+        opponent_team = None
+        self.gamestate = GameState(my_team,opponent_team)
+
+
     def current_state(self):
         print("State of the game :")
-        print("My pokemon : " + self.selenium.get_my_primary() + " health : " +  self.selenium.get_my_primary_health())
-        print("Opponent pokemon : " + self.selenium.get_opponent_primary() + " health : " + self.selenium.get_opponent_primary_health())
+        self.selenium.get_my_primary()
+        print("health : " + str(self.selenium.get_my_primary_health()))
+        self.selenium.get_opponent_primary()
+        print("health : " + str(self.selenium.get_opponent_primary_health()))
 
 
     def play_game(self, challenge=None):
@@ -65,7 +96,7 @@ class Showdown():
             over = False
             while not over:
                 print("==========================================================================================")
-                #self.current_state()
+                self.current_state()
                 print ("My move:")
                 self.selenium.random_Attack()
 
@@ -83,16 +114,16 @@ class Showdown():
 
     def run(self, num_games=1, challenge=None):
         if challenge:
-            print("Set to challenge: %s", challenge)
+            print("Set to challenge: %s" % challenge)
         else:
-            print("Set to play %u games", num_games)
+            print("Set to play %u games" % num_games)
         self.init()
         for i in range(num_games):
             result, error = None, None
             try:
                 self.play_game(challenge=challenge)
             except GameOverException:
-                print("GameOverException")
+                print("Game " + i +" is over")
             except UserNotOnlineException:
                 print("User not online: %s" % challenge)
                 print("Exiting...")
